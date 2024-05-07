@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mysql-container:
+    image: mysql:latest
+    container_name: mysql-container
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: mail
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - spring-mysql
+
+  springapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springapp-container
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysql-container
+#    environment:
+
+    volumes:
+      - ./logs:/app/logs
+    networks:
+      - spring-mysql
+
+volumes:
+  mysql-data:
+
+networks:
+  spring-mysql:
+    driver: bridge
